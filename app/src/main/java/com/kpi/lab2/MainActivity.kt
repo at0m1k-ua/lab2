@@ -3,57 +3,55 @@ package com.kpi.lab2
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kpi.lab2.ui.theme.Lab2Theme
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 class MainActivity : ComponentActivity() {
+    private var inputsMap by mutableStateOf(mapOf(
+        "coal" to "",
+        "oil" to "",
+        "gas" to ""
+    ))
+
     private var calculationResult by mutableStateOf("Показники ще не обчислено")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             InputsScreen(
+                inputsMap = inputsMap,
+                onValueChange = { key, value ->
+                    inputsMap = inputsMap.toMutableMap().apply { this[key] = value }
+                },
                 calculationResult = calculationResult,
-                onCalculate = {
-                    calculate()
-                }
+                onCalculate = { calculate() }
             )
         }
     }
 
     private fun calculate() {
+        val coal = inputsMap["coal"] ?: ""
+        val oil = inputsMap["oil"] ?: ""
+        val gas = inputsMap["gas"] ?: ""
 
+        calculationResult = "Вугілля - $coal т, Мазут - $oil т, Газ - $gas м³"
     }
 }
 
 @Composable
 fun InputsScreen(
+    inputsMap: Map<String, String>,
+    onValueChange: (String, String) -> Unit,
     calculationResult: String,
     onCalculate: () -> Unit
 ) {
@@ -69,47 +67,37 @@ fun InputsScreen(
             Input(
                 label = "Донецьке газове вугілля марки ГР",
                 units = "т",
-                value = "",
-                onValueChange = { newValue ->
-
-                }
+                value = inputsMap["coal"] ?: "",
+                onValueChange = { onValueChange("coal", it) }
             )
             Input(
                 label = "Високосірчистий мазут марки 40",
                 units = "т",
-                value = "",
-                onValueChange = { newValue ->
-
-                }
+                value = inputsMap["oil"] ?: "",
+                onValueChange = { onValueChange("oil", it) }
             )
             Input(
                 label = "Природний газ із газопроводу Уренгой-Ужгород",
-                units = "м3",
-                value = "",
-                onValueChange = { newValue ->
-
-                }
+                units = "м³",
+                value = inputsMap["gas"] ?: "",
+                onValueChange = { onValueChange("gas", it) }
             )
         }
 
         Text(calculationResult)
 
-        Column {
-            Button(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .height(72.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                onClick = {
-                    onCalculate()
-                }
-            ) {
-                Text(
-                    "Calculate",
-                    fontSize = 24.sp
-                )
-            }
+        Button(
+            modifier = Modifier
+                .padding(8.dp)
+                .height(72.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            onClick = { onCalculate() }
+        ) {
+            Text(
+                "Calculate",
+                fontSize = 24.sp
+            )
         }
     }
 }

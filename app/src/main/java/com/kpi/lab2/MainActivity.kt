@@ -19,8 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 class MainActivity : ComponentActivity() {
     private var inputsMap by mutableStateOf(mapOf(
         "coal" to "",
-        "oil" to "",
-        "gas" to ""
+        "oil" to ""
     ))
 
     private var calculationResult by mutableStateOf("Показники ще не обчислено")
@@ -40,11 +39,32 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun calculate() {
-        val coal = inputsMap["coal"] ?: ""
-        val oil = inputsMap["oil"] ?: ""
-        val gas = inputsMap["gas"] ?: ""
+        val n_zu = 0.985
 
-        calculationResult = "Вугілля - $coal т, Мазут - $oil т, Газ - $gas м³"
+        val coal_qri = 20.47
+        val coal_a_vin = 0.8
+        val coal_a_r = 25.2
+
+        val oil_qri = 40.4
+        val oil_a_vin = 1
+        val oil_a_r = 0.15
+
+        val coal_amt = inputsMap["coal"]?.toDoubleOrNull() ?: .0
+        val oil_amt = inputsMap["oil"]?.toDoubleOrNull() ?: .0
+
+        val coal_k_tv = 1000000*coal_a_vin*coal_a_r*(1 - n_zu)/coal_qri/(100 - 1.5)
+        val coal_e_tv = coal_k_tv*coal_qri*coal_amt/1000000
+
+        val oil_k_tv = 1000000*oil_a_vin*oil_a_r*(1 - n_zu)/oil_qri/100
+        val oil_e_tv = oil_k_tv*oil_qri*oil_amt/1000000
+
+        calculationResult =
+            """
+                Kтв вугілля - %.2f г/ГДж\n
+                Eтв вугілля - %.2f т\n
+                Kтв мазуту - %.2f г/ГДж\n
+                Eтв мазуту - %.2f т\n
+            """.trimIndent().format(coal_k_tv, coal_e_tv, oil_k_tv, oil_e_tv)
     }
 }
 
@@ -75,12 +95,6 @@ fun InputsScreen(
                 units = "т",
                 value = inputsMap["oil"] ?: "",
                 onValueChange = { onValueChange("oil", it) }
-            )
-            Input(
-                label = "Природний газ із газопроводу Уренгой-Ужгород",
-                units = "м³",
-                value = inputsMap["gas"] ?: "",
-                onValueChange = { onValueChange("gas", it) }
             )
         }
 

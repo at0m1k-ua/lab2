@@ -84,7 +84,10 @@ fun InputsScreen(
             )
         }
 
-        Text(calculationResult)
+        Text(
+            calculationResult,
+            modifier = Modifier.padding(8.dp)
+        )
 
         Button(
             modifier = Modifier
@@ -118,7 +121,7 @@ fun Input(label: String, units: String, value: String, onValueChange: (String) -
                     onValueChange(it)
                 }
             },
-            modifier = Modifier.height(48.dp).padding(horizontal = 8.dp),
+            modifier = Modifier.height(64.dp).padding(8.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine = true
         )
